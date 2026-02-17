@@ -57,12 +57,15 @@ Walls: obstacles
 
 var floorColor = 0xAAD4E5;
 var floorData = 1;
-var wallColor = 0x000000;
+var wallColor = 0x003C8C;
 var wallData = 2;
 var goalColor = 0xFFFFFF;
 var goalData = 3;
+var goalGlyph = 0x2690;
 var playerColor = 0xB99ABF;
 var playerData = 4;
+var pathColor = 0x4d6df3;
+var pathData = 5;
 var gridsize = 10;
 var playerPosX = 0;
 var playerPosY = 0;
@@ -70,6 +73,7 @@ var playerinitX = 0;
 var playerinitY = 0;
 var goalPosX = 4;
 var goalPosY = 1;
+var currentLevel = 0;
 
 PS.init = function( system, options ) {
 	// Uncomment the following code line
@@ -89,7 +93,7 @@ PS.init = function( system, options ) {
 
 	PS.gridSize( gridsize, gridsize );
     PS.gridColor(155, 180, 191);
-    PS.setPuzzle();
+    PS.levelManager();
     PS.audioLoad("fx_swoosh");
     PS.audioLoad("fx_tada");
     //PS.statusText("R if stuck");
@@ -109,7 +113,24 @@ PS.makeWall = function(x,y) {
     PS.data(x,y,wallData);
 }
 
-var delayer;
+PS.makeGoal = function(x,y) {
+    PS.color(x,y,goalColor);
+    PS.data(x,y,goalData);
+    PS.glyph(x,y,goalGlyph);
+    goalPosX = x;
+    goalPosY = y;
+}
+
+PS.makePlayer = function(x,y) {
+    PS.color(x,y,playerColor);
+    PS.data(x,y,playerData);
+}
+
+PS.makePath = function(x,y) {
+    PS.color(x,y,pathColor);
+    PS.data(x,y,pathData);
+}
+
 function movePlayer(x1,y1,x2,y2) {
     if (y1 != y2) {
         for (var i = x1; i <= x2; i++) {
@@ -133,42 +154,49 @@ function movePlayer(x1,y1,x2,y2) {
             }
         }
     }
-   // delayer = PS.timerStart(10,movePlayerHelper);
 }
-// // 0 = X, 1 = Y
-// function movePlayerHelper(x,y,XorY) {
-//     if (XorY === 0){
-//         for (x; x<gridsize; x++) {
-//             if (PS.data(x,y) === floorData){
-//                 PS.color(x,y,floorColor);
-//             }
-//         }
-//     }
-//     else if (XorY === 1){
-//         for (y; y<gridsize; y++) {
-//             if (PS.data(x,y) === floorData){
-//                 PS.color(x,y,floorColor);
-//             }
-//         }
-//     }
-//
-//     for (var i = 0; i<gridsize;i++){
-//         for (var j=0; j<gridsize; j++) {
-//             if (PS.data(i,j) === floorData){
-//                 PS.color(i,j,floorColor);
-//             }
-//         }
-//     }
-//     PS.timerStop(delayer);
-// }
 
-PS.setPuzzle = function() {
+
+PS.levelManager = function(){
+    if (currentLevel === 0) {
+        PS.statusText("Level 1");
+        PS.setLevel0();
+    }
+
+    else if (currentLevel === 1) {
+        PS.statusText("Level 2");
+        PS.audioPlay("fx_tada");
+        gridsize = 12;
+        PS.gridSize( gridsize, gridsize);
+        PS.gridColor(155, 180, 191);
+        PS.setLevel1();
+    }
+
+    else if (currentLevel === 2) {
+        PS.statusText("Level 3");
+        PS.audioPlay("fx_tada");
+        PS.setLevel2();
+    }
+
+    else if (currentLevel === 3) {
+        PS.statusText("Level 4");
+        PS.audioPlay("fx_tada");
+        gridsize = 16;
+        PS.gridSize( gridsize, gridsize);
+        PS.gridColor(155, 180, 191);
+        PS.setLevel3();
+    }
+
+    else {
+    PS.gameWin();
+    }
+}
+
+PS.setLevel0 = function() {
     // place the goal
-    PS.color(4,1, goalColor);
-    PS.data(4,1, goalData);
+    PS.makeGoal(4,1);
     //place the playerStart
-    PS.color(playerinitX,playerinitY, playerColor);
-    PS.data(playerinitX,playerinitY, playerData);
+    PS.makePlayer(playerinitX,playerinitY);
     playerPosX = playerinitX;
     playerPosY = playerinitY;
     //place the walls
@@ -195,7 +223,161 @@ PS.setPuzzle = function() {
     }
 }
 
-PS.levelClear = function() {
+PS.setLevel1 = function() {
+    // reset the board
+    for (var i = 0; i < gridsize; i++) {
+        for (var j = 0; j < gridsize; j++) {
+                PS.color(i,j, floorColor);
+                PS.data(i,j, floorData);
+                PS.glyph(i,j, 0);
+        }
+    }
+    // place the goal
+    PS.makeGoal(6,0);
+    // set the player
+    PS.makePlayer(4,0);
+    playerPosX = 4;
+    playerPosY = 0;
+    // set the walls
+    PS.makeWall(5,0);
+    PS.makeWall(7,0);
+    PS.makeWall(10,0);
+    PS.makeWall(1,1);
+    PS.makeWall(10,1);
+    PS.makeWall(9,2);
+    PS.makeWall(9,3);
+    PS.makeWall(4,3);
+    PS.makeWall(8,4);
+    PS.makeWall(1,5);
+    PS.makeWall(2,5);
+    PS.makeWall(3,5);
+    PS.makeWall(10,5);
+    PS.makeWall(5,6);
+    PS.makeWall(11,6);
+
+    PS.makeWall(5,8);
+
+    PS.makeWall(0,9);
+    PS.makeWall(1,9);
+    PS.makeWall(5,9);
+    PS.makeWall(9,10);
+    PS.makeWall(2,11);
+    PS.makeWall(9,11);
+
+}
+
+PS.setLevel2 = function() {
+    // reset the board
+    for (var i = 0; i < gridsize; i++) {
+        for (var j = 0; j < gridsize; j++) {
+            PS.color(i,j, floorColor);
+            PS.data(i,j, floorData);
+            PS.glyph(i,j, 0);
+        }
+    }
+    // make goal
+    PS.makeGoal(9,9);
+    // set player
+    PS.makePlayer(1,0);
+    playerPosX = 1;
+    playerPosY = 0;
+    // set walls and paths
+    PS.makeWall(0,2);
+    PS.makePath(4, 2);
+    PS.makeWall(9,2);
+    PS.makeWall(1,3);
+    PS.makeWall(8,3);
+    PS.makeWall(7,4);
+    PS.makeWall(3,5);
+    PS.makeWall(4,5);
+    PS.makeWall(5,5);
+    PS.makeWall(10,5);
+    PS.makeWall(11,5);
+    PS.makeWall(9,6);
+    PS.makeWall(10,6);
+    PS.makeWall(2,7);
+    PS.makeWall(4,7);
+    PS.makePath(11,7);
+    PS.makeWall(2,8);
+    PS.makePath(9,8);
+    PS.makeWall(2,9);
+    PS.makeWall(5, 9);
+    PS.makeWall(5,10);
+    PS.makeWall(9,10);
+}
+
+PS.setLevel3 = function() {
+    // reset the board
+    for (var i = 0; i < gridsize; i++) {
+        for (var j = 0; j < gridsize; j++) {
+            PS.color(i,j, floorColor);
+            PS.data(i,j, floorData);
+            PS.glyph(i,j, 0);
+        }
+    }
+    // set goal
+    PS.makeGoal(7,0);
+    // set player start
+    PS.makePlayer(13,13);
+    playerPosX = 13;
+    playerPosY = 13;
+    // set walls and paths
+    PS.makeWall(6,0);
+    PS.makeWall(8,0);
+    PS.makeWall(12,0);
+    PS.makeWall(13,0);
+    PS.makeWall(14,0);
+    PS.makeWall(1,1);
+    PS.makeWall(2,1);
+    PS.makeWall(3,1);
+    PS.makeWall(1,2);
+    PS.makeWall(3,2);
+    PS.makeWall(9,2);
+    PS.makeWall(11,2);
+    PS.makeWall(12,2);
+    PS.makeWall(13,2);
+    PS.makePath(2,3);
+    PS.makePath(7,3);
+    PS.makeWall(9,3);
+    PS.makeWall(9,4);
+    PS.makePath(13,4);
+    PS.makeWall(1,5);
+    PS.makeWall(10,5);
+    PS.makeWall(4,6);
+    PS.makeWall(5,6);
+    PS.makeWall(6,6);
+    PS.makeWall(7,6);
+    PS.makeWall(10,6);
+    PS.makeWall(1,7);
+    PS.makeWall(10,7);
+    PS.makeWall(1,8);
+    PS.makeWall(10,8);
+    PS.makeWall(3,9);
+    PS.makeWall(4,9);
+    PS.makePath(8,9);
+    PS.makePath(13,9);
+    PS.makeWall(4,10);
+    PS.makeWall(5,10);
+    PS.makeWall(1,11);
+    PS.makeWall(2,11);
+    PS.makeWall(5,11);
+    PS.makeWall(12,11);
+    PS.makeWall(13,11);
+    PS.makeWall(5,12);
+    PS.makeWall(6,12);
+    PS.makeWall(11,12);
+    PS.makePath(2,13);
+    PS.makeWall(9,13);
+    PS.makeWall(1,14);
+    PS.makeWall(2,14);
+    PS.makeWall(3,14);
+    PS.makeWall(8,14);
+    PS.makeWall(15,14);
+    PS.makeWall(14,15);
+    PS.makeWall(15,15);
+}
+
+PS.gameWin = function() {
     PS.audioPlay("fx_tada");
     gridsize = 16;
     PS.gridSize( gridsize, gridsize);
@@ -383,24 +565,38 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	// Uncomment the following code line to inspect first three parameters:
     if (key == PS.KEY_ARROW_UP || key == 119){
         if (playerPosY !== 0 && PS.data(playerPosX, playerPosY-1) !== 2) {
+            var pathThere = false;
             var wallPosY;
-            for (wallPosY = playerPosY-1; wallPosY > -1; wallPosY--) {
+            for (wallPosY = playerPosY - 1; wallPosY > -1; wallPosY--) {
                 if (PS.data(playerPosX, wallPosY) === wallData) {
                     break;
                 }
+                else if (PS.data(playerPosX, wallPosY) === pathData) {
+                    pathThere = true;
+                    break;
+                }
             }
+            if (!pathThere) {
             PS.data(playerPosX, playerPosY, floorData);
             PS.color(playerPosX, playerPosY, floorColor);
             var initPlayerPosY = playerPosY;
-            playerPosY = wallPosY+1;
-            PS.color(playerPosX, playerPosY, playerColor);
-            PS.data(playerPosX, playerPosY, playerData);
-            movePlayer(playerPosX, playerPosY,playerPosX,initPlayerPosY);
+            playerPosY = wallPosY + 1;
+            PS.makePlayer(playerPosX, playerPosY);
+            movePlayer(playerPosX, playerPosY, playerPosX, initPlayerPosY);
             if (playerPosX === goalPosX && playerPosY === goalPosY) {
-                PS.statusText("You Win!");
-                PS.levelClear();
+                currentLevel++;
+                PS.levelManager();
+            } else {
+                PS.audioPlay("fx_swoosh");
             }
-            else {
+        }
+        else {
+                PS.data(playerPosX, playerPosY, floorData);
+                PS.color(playerPosX, playerPosY, floorColor);
+                var initPlayerPosY = playerPosY;
+                playerPosY = wallPosY;
+                PS.makePlayer(playerPosX, playerPosY);
+                movePlayer(playerPosX, initPlayerPosY, playerPosX, playerPosY);
                 PS.audioPlay("fx_swoosh");
             }
 
@@ -409,24 +605,38 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 
     else if (key == PS.KEY_ARROW_DOWN || key == 115){
         if (playerPosY !== gridsize-1 && PS.data(playerPosX, playerPosY+1) !== 2) {
+            var pathThere = false;
             var wallPosY;
             for (wallPosY = playerPosY+1; wallPosY < gridsize; wallPosY++) {
                 if (PS.data(playerPosX, wallPosY) === wallData) {
                     break;
                 }
+                else if (PS.data(playerPosX, wallPosY) === pathData) {
+                    pathThere = true;
+                    break;
+                }
             }
-            PS.data(playerPosX, playerPosY, floorData);
-            PS.color(playerPosX, playerPosY, floorColor);
-            var initPlayerPosY = playerPosY;
-            playerPosY = wallPosY-1;
-            PS.color(playerPosX, playerPosY, playerColor);
-            PS.data(playerPosX, playerPosY, playerData);
-            movePlayer(playerPosX, initPlayerPosY, playerPosX, playerPosY);
-            if (playerPosX === goalPosX && playerPosY === goalPosY) {
-                PS.statusText("You Win!");
-                PS.levelClear();
+            if (!pathThere) {
+                PS.data(playerPosX, playerPosY, floorData);
+                PS.color(playerPosX, playerPosY, floorColor);
+                var initPlayerPosY = playerPosY;
+                playerPosY = wallPosY - 1;
+                PS.makePlayer(playerPosX, playerPosY);
+                movePlayer(playerPosX, initPlayerPosY, playerPosX, playerPosY);
+                if (playerPosX === goalPosX && playerPosY === goalPosY) {
+                    currentLevel++;
+                    PS.levelManager();
+                } else {
+                    PS.audioPlay("fx_swoosh");
+                }
             }
             else {
+                PS.data(playerPosX, playerPosY, floorData);
+                PS.color(playerPosX, playerPosY, floorColor);
+                var initPlayerPosY = playerPosY;
+                playerPosY = wallPosY;
+                PS.makePlayer(playerPosX, playerPosY);
+                movePlayer(playerPosX, initPlayerPosY, playerPosX, playerPosY);
                 PS.audioPlay("fx_swoosh");
             }
         }
@@ -434,24 +644,38 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 
     else if (key == PS.KEY_ARROW_LEFT || key == 97) {
         if (playerPosX !== 0 && PS.data(playerPosX - 1, playerPosY) !== 2) {
+            var pathThere = false;
             var wallPosX;
             for (wallPosX = playerPosX - 1; wallPosX > -1; wallPosX--) {
                 if (PS.data(wallPosX, playerPosY) === wallData) {
                     break;
                 }
+                else if (PS.data(wallPosX, playerPosY) === pathData) {
+                    pathThere = true;
+                    break;
+                }
             }
-            PS.data(playerPosX, playerPosY, floorData);
-            PS.color(playerPosX, playerPosY, floorColor);
-            var initPlayerPosX = playerPosX;
-            playerPosX = wallPosX + 1;
-            PS.color(playerPosX, playerPosY, playerColor);
-            PS.data(playerPosX, playerPosY, playerData);
-            movePlayer(playerPosX, playerPosY, initPlayerPosX, playerPosY);
-            if (playerPosX === goalPosX && playerPosY === goalPosY) {
-                PS.statusText("You Win!");
-                PS.levelClear();
+            if (!pathThere) {
+                PS.data(playerPosX, playerPosY, floorData);
+                PS.color(playerPosX, playerPosY, floorColor);
+                var initPlayerPosX = playerPosX;
+                playerPosX = wallPosX + 1;
+                PS.makePlayer(playerPosX, playerPosY);
+                movePlayer(playerPosX, playerPosY, initPlayerPosX, playerPosY);
+                if (playerPosX === goalPosX && playerPosY === goalPosY) {
+                    currentLevel++;
+                    PS.levelManager();
+                } else {
+                    PS.audioPlay("fx_swoosh");
+                }
             }
-            else {
+        else {
+                PS.data(playerPosX, playerPosY, floorData);
+                PS.color(playerPosX, playerPosY, floorColor);
+                var initPlayerPosX = playerPosX;
+                playerPosX = wallPosX;
+                PS.makePlayer(playerPosX, playerPosY);
+                movePlayer(initPlayerPosX, playerPosY, playerPosX, playerPosY);
                 PS.audioPlay("fx_swoosh");
             }
         }
@@ -459,24 +683,39 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 
     else if (key == PS.KEY_ARROW_RIGHT || key == 100){
             if (playerPosX !== gridsize-1 && PS.data(playerPosX+1, playerPosY) !== 2) {
+                var pathThere = false;
                 var wallPosX;
                 for (wallPosX = playerPosX+1; wallPosX < gridsize; wallPosX++) {
                     if (PS.data(wallPosX, playerPosY) === wallData) {
                         break;
                     }
+                    else if (PS.data(wallPosX, playerPosY) === pathData) {
+                        pathThere = true;
+                        break;
+                    }
                 }
-                PS.data(playerPosX, playerPosY, floorData);
-                PS.color(playerPosX, playerPosY, floorColor);
-                var initPlayerPosX = playerPosX;
-                playerPosX = wallPosX-1;
-                PS.color(playerPosX, playerPosY, playerColor);
-                PS.data(playerPosX, playerPosY, playerData);
-                movePlayer(initPlayerPosX, playerPosY, playerPosX, playerPosY);
-                if (playerPosX === goalPosX && playerPosY === goalPosY) {
-                    PS.statusText("You Win!");
-                    PS.levelClear();
+                if (!pathThere)
+                {
+                    PS.data(playerPosX, playerPosY, floorData);
+                    PS.color(playerPosX, playerPosY, floorColor);
+                    var initPlayerPosX = playerPosX;
+                    playerPosX = wallPosX - 1;
+                    PS.makePlayer(playerPosX, playerPosY);
+                    movePlayer(initPlayerPosX, playerPosY, playerPosX, playerPosY);
+                    if (playerPosX === goalPosX && playerPosY === goalPosY) {
+                        currentLevel++;
+                        PS.levelManager();
+                    } else {
+                        PS.audioPlay("fx_swoosh");
+                    }
                 }
                 else {
+                    PS.data(playerPosX, playerPosY, floorData);
+                    PS.color(playerPosX, playerPosY, floorColor);
+                    var initPlayerPosX = playerPosX;
+                    playerPosX = wallPosX;
+                    PS.makePlayer(playerPosX, playerPosY);
+                    movePlayer(initPlayerPosX, playerPosY, playerPosX, playerPosY);
                     PS.audioPlay("fx_swoosh");
                 }
             }
@@ -485,7 +724,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
     else if (key == 114){
         PS.data(playerPosX, playerPosY, floorData);
         PS.color(playerPosX, playerPosY, floorColor);
-        PS.setPuzzle();
+        PS.levelManager();
         PS.statusText("Puzzle Reset");
     }
 	// PS.debug( "PS.keyDown(): key=" + key + ", shift=" + shift + ", ctrl=" + ctrl + "\n" );
