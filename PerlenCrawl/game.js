@@ -191,7 +191,7 @@ PS.makeFloor = function(x,y){
 PS.makeChest = function(x,y){
 	PS.color(x,y, 0xcccc00);
 	PS.data(x,y,4);
-	PS.spriteMove(sprite_2,x,y);
+	PS.spriteMove("sprite_2",x,y);
 	chestX = x;
 	chestY = y;
 }
@@ -199,7 +199,7 @@ PS.makeChest = function(x,y){
 PS.makePlayer = function(x,y){
 	PS.color(x,y,playerColor);
 	PS.data(x,y,playerData);
-	PS.spriteMove(sprite_0,x,y);
+	PS.spriteMove("sprite_0",x,y);
 	player.setX(x);
 	player.setY(y);
 }
@@ -207,7 +207,7 @@ PS.makePlayer = function(x,y){
 PS.makeSnake = function(x,y){
 	PS.color(x,y,snakeSprite);
 	PS.data(x,y,snakeData);
-	PS.spriteMove(sprite_1,x,y);
+	PS.spriteMove("sprite_1",x,y);
 	snakeX = x;
 	snakeY = y;
 }
@@ -235,7 +235,7 @@ PS.makeFloor(chestX,chestY);
 PS.makeStair = function(x, y){
 	PS.color(x,y,0x6600ff);
 	PS.data(x,y,stairData);
-	PS.spriteMove(sprite_3,x,y);
+	PS.spriteMove("sprite_3",x,y);
 	stairX = x;
 	stairY = y;
 }
