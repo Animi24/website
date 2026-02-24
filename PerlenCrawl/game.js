@@ -87,9 +87,9 @@ PS.init = function( system, options ) {
 
 	PS.gridSize(10,13);
 	PS.gridColor(0xa3a3c2);
+	PS.imageLoad("Images/player.bmp", playerSpriteLoader);
 	PS.levelLoader();
 	PS.uiLoader();
-	PS.imageLoad("Images/player.bmp", playerSpriteLoader);
 
 	//PS.spriteMove(playerSprite,0,0);
 
@@ -122,6 +122,7 @@ PS.makeFloor = function(x,y){
 PS.makePlayer = function(x,y){
 	PS.color(x,y,playerColor);
 	PS.data(x,y,playerData);
+	PS.spriteMove(playerSprite,x,y);
 	playerX = x;
 	playerY = y;
 }
@@ -148,7 +149,9 @@ PS.uiLoader = function() {
 		}
 	}
 	// setup health
-	PS.glyph()
+	PS.glyph(1,11,0x2665);
+	PS.glyph(2,11,0x0030);
+	PS.glyph(3,11,0x003);
 }
 
 PS.gameOver = function() {
