@@ -133,6 +133,8 @@ var stairY = 9;
 var stairData = 5;
 var chestClosed = true;
 var floorsCleared = 0;
+var chestSprite;
+var stairSprite;
 
 
 PS.init = function( system, options ) {
@@ -153,10 +155,10 @@ PS.init = function( system, options ) {
 
 	PS.gridSize(10,13);
 	PS.gridColor(0xa3a3c2);
-	PS.imageLoad("Images/player.png", spriteLoader);
-	PS.imageLoad("Images/snake.png",spriteLoader);
-	PS.imageLoad("Images/chest.png",spriteLoader);
-	PS.imageLoad("Images/stair.png",spriteLoader);
+	PS.imageLoad("Images/player.png", playerSpriteLoader);
+	PS.imageLoad("Images/snake.png",snakeSpriteLoader);
+	PS.imageLoad("Images/chest.png",chestSpriteLoader);
+	PS.imageLoad("Images/stair.png",stairSpriteLoader);
 	PS.levelLoader();
 	PS.uiLoader();
 
@@ -173,9 +175,21 @@ PS.init = function( system, options ) {
 	// Add any other initialization code you need here.
 };
 
-function spriteLoader(image) {
+function playerSpriteLoader(image) {
 	// an image object representing kitten.bmp
-	PS.spriteImage(image);
+	playerSprite = PS.spriteImage(image);
+};
+function snakeSpriteLoader(image) {
+	// an image object representing kitten.bmp
+	snakeSprite = PS.spriteImage(image);
+};
+function chestSpriteLoader(image) {
+	// an image object representing kitten.bmp
+	chestSprite = PS.spriteImage(image);
+};
+function stairSpriteLoader(image) {
+	// an image object representing kitten.bmp
+	stairSprite = PS.spriteImage(image);
 };
 
 PS.makeWall = function(x,y){
@@ -191,7 +205,8 @@ PS.makeFloor = function(x,y){
 PS.makeChest = function(x,y){
 	PS.color(x,y, 0xcccc00);
 	PS.data(x,y,4);
-	PS.spriteMove("sprite_2",x,y);
+	PS.spriteMove(chestSprite,x,y);
+	PS.spriteShow(chestSprite);
 	chestX = x;
 	chestY = y;
 }
@@ -199,7 +214,8 @@ PS.makeChest = function(x,y){
 PS.makePlayer = function(x,y){
 	PS.color(x,y,playerColor);
 	PS.data(x,y,playerData);
-	PS.spriteMove("sprite_0",x,y);
+	PS.spriteMove(playerSprite,x,y);
+	PS.spriteShow(playerSprite);
 	player.setX(x);
 	player.setY(y);
 }
@@ -207,7 +223,8 @@ PS.makePlayer = function(x,y){
 PS.makeSnake = function(x,y){
 	PS.color(x,y,snakeSprite);
 	PS.data(x,y,snakeData);
-	PS.spriteMove("sprite_1",x,y);
+	PS.spriteMove(snakeSprite,x,y);
+	PS.spriteShow(snakeSprite);
 	snakeX = x;
 	snakeY = y;
 }
@@ -235,7 +252,8 @@ PS.makeFloor(chestX,chestY);
 PS.makeStair = function(x, y){
 	PS.color(x,y,0x6600ff);
 	PS.data(x,y,stairData);
-	PS.spriteMove("sprite_3",x,y);
+	PS.spriteMove(stairSprite,x,y);
+	PS.spriteShow(stairSprite);
 	stairX = x;
 	stairY = y;
 }
