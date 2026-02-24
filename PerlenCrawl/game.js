@@ -116,14 +116,14 @@ class Snake extends Enemy {
 
 var playerData = 2;
 var playerColor = 0x99ff99;
-var playerSprite;
+var playerSprite = "unloaded";
 var snakeMaxHp = 4;
 var snakeCurrHp = 4;
 var snakeX = 8;
 var snakeY = 8;
 var snakeData = 3;
 var snakeAlive = true;
-var snakeSprite = 0xff0000;
+var snakeSprite = "unloaded";
 var snakeDMG = 2;
 var chestX = 7;
 var chestY = 8;
@@ -133,8 +133,8 @@ var stairY = 9;
 var stairData = 5;
 var chestClosed = true;
 var floorsCleared = 0;
-var chestSprite;
-var stairSprite;
+var chestSprite= "unloaded";
+var stairSprite= "unloaded";
 
 
 PS.init = function( system, options ) {
@@ -178,18 +178,26 @@ PS.init = function( system, options ) {
 function playerSpriteLoader(image) {
 	// an image object representing kitten.bmp
 	playerSprite = PS.spriteImage(image);
+	PS.spriteMove(playerSprite, 0,0);
+	PS.spriteShow(playerSprite);
 };
 function snakeSpriteLoader(image) {
 	// an image object representing kitten.bmp
 	snakeSprite = PS.spriteImage(image);
+	PS.spriteMove(snakeSprite, 0,0);
+	PS.spriteShow(snakeSprite);
 };
 function chestSpriteLoader(image) {
 	// an image object representing kitten.bmp
 	chestSprite = PS.spriteImage(image);
+	PS.spriteMove(chestSprite, 0,0);
+	PS.spriteShow(chestSprite);
 };
 function stairSpriteLoader(image) {
 	// an image object representing kitten.bmp
-	stairSprite = PS.spriteImage(image);
+	stairSprite = PS.spriteImage(image)
+	PS.spriteMove(stairSprite, 0,0);
+	PS.spriteShow(stairSprite);
 };
 
 PS.makeWall = function(x,y){
@@ -221,7 +229,7 @@ PS.makePlayer = function(x,y){
 }
 
 PS.makeSnake = function(x,y){
-	PS.color(x,y,snakeSprite);
+	PS.color(x,y,0xff0000);
 	PS.data(x,y,snakeData);
 	PS.spriteMove(snakeSprite,x,y);
 	PS.spriteShow(snakeSprite);
