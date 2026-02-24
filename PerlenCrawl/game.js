@@ -153,7 +153,10 @@ PS.init = function( system, options ) {
 
 	PS.gridSize(10,13);
 	PS.gridColor(0xa3a3c2);
-	PS.imageLoad("Images/player.bmp", playerSpriteLoader);
+	PS.imageLoad("Images/player.png", spriteLoader);
+	PS.imageLoad("Images/snake.png",spriteLoader);
+	PS.imageLoad("Images/chest.png",spriteLoader);
+	PS.imageLoad("Images/stair.png",spriteLoader);
 	PS.levelLoader();
 	PS.uiLoader();
 
@@ -170,7 +173,7 @@ PS.init = function( system, options ) {
 	// Add any other initialization code you need here.
 };
 
-function playerSpriteLoader(image) {
+function spriteLoader(image) {
 	// an image object representing kitten.bmp
 	PS.spriteImage(image);
 };
@@ -188,6 +191,7 @@ PS.makeFloor = function(x,y){
 PS.makeChest = function(x,y){
 	PS.color(x,y, 0xcccc00);
 	PS.data(x,y,4);
+	PS.spriteMove(sprite_2,x,y);
 	chestX = x;
 	chestY = y;
 }
@@ -203,6 +207,7 @@ PS.makePlayer = function(x,y){
 PS.makeSnake = function(x,y){
 	PS.color(x,y,snakeSprite);
 	PS.data(x,y,snakeData);
+	PS.spriteMove(sprite_1,x,y);
 	snakeX = x;
 	snakeY = y;
 }
@@ -230,6 +235,7 @@ PS.makeFloor(chestX,chestY);
 PS.makeStair = function(x, y){
 	PS.color(x,y,0x6600ff);
 	PS.data(x,y,stairData);
+	PS.spriteMove(sprite_3,x,y);
 	stairX = x;
 	stairY = y;
 }
@@ -774,5 +780,4 @@ PS.input = function( sensors, options ) {
 
 	// Add code here for when an input event is detected.
 };
-
 
