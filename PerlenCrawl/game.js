@@ -49,15 +49,74 @@ Any value returned is ignored.
 */
 
 //const playerImage = PS.imageLoad("player.png", PS.debug("image Loaded"));
-var playerMaxHp = 5;
-var playerCurrHp = 5;
-var playerDMG = 3;
-var playerX = 0;
-var playerY = 0;
+class Player {
+	constructor(maxHp,currHp,Dmg,x,y, alive){
+		this.maxHp=maxHp
+		this.currHp=currHp
+		this.Dmg = Dmg;
+		this.x = x;
+		this.y = y;
+		this.alive = alive;
+	}
+	getX(){
+		return this.x;
+	}
+	setX(x){
+		this.x = x;
+	}
+	getY(){
+		return this.y;
+	}
+	setY(y){
+		this.y = y;
+	}
+	getDmg(){
+		return this.Dmg;
+	}
+	setDmg(dmg){
+		this.Dmg = dmg;
+		PS.uiLoader();
+	}
+	getMaxHp(){
+		return this.maxHp;
+	}
+	setMaxHp(Hp){
+		this.maxHp = Hp;
+		PS.uiLoader();
+	}
+	getCurrHp(){
+		return this.currHp;
+	}
+	setCurrHp(Hp){
+		this.currHp = Hp;
+		PS.uiLoader();
+	}
+	getAlive(){
+		return this.alive;
+	}
+	setAlive(alive){
+		this.alive = alive;
+	}
+}
+const player = new Player(5,5,3,0,0,true);
+class Enemy{
+	constructor(maxHp,currHp,Dmg,x,y){
+		this.maxHp=maxHp
+		this.currHp=currHp
+		this.Dmg = Dmg;
+		this.x = x;
+		this.y = y;
+	}
+}
+class Snake extends Enemy {
+	constructor(){
+		super();
+	}
+}
+
 var playerData = 2;
 var playerColor = 0x99ff99;
 var playerSprite;
-var playerAlive = true;
 var snakeMaxHp = 4;
 var snakeCurrHp = 4;
 var snakeX = 8;
@@ -66,7 +125,14 @@ var snakeData = 3;
 var snakeAlive = true;
 var snakeSprite = 0xff0000;
 var snakeDMG = 2;
-
+var chestX = 7;
+var chestY = 8;
+var chestData = 4;
+var stairX = 9;
+var stairY = 9;
+var stairData = 5;
+var chestClosed = true;
+var floorsCleared = 0;
 
 
 PS.init = function( system, options ) {
@@ -107,6 +173,7 @@ PS.init = function( system, options ) {
 function playerSpriteLoader(image) {
 	// an image object representing kitten.bmp
 	playerSprite = PS.spriteImage(image);
+	PS.debug(playerSprite);
 };
 
 PS.makeWall = function(x,y){
@@ -119,12 +186,19 @@ PS.makeFloor = function(x,y){
 	PS.data(x,y,0);
 }
 
+PS.makeChest = function(x,y){
+	PS.color(x,y, 0xcccc00);
+	PS.data(x,y,4);
+	chestX = x;
+	chestY = y;
+}
+
 PS.makePlayer = function(x,y){
 	PS.color(x,y,playerColor);
 	PS.data(x,y,playerData);
-	PS.spriteMove(playerSprite,x,y);
-	playerX = x;
-	playerY = y;
+	//PS.spriteMove(playerSprite,x,y);
+	player.setX(x);
+	player.setY(y);
 }
 
 PS.makeSnake = function(x,y){
@@ -134,30 +208,255 @@ PS.makeSnake = function(x,y){
 	snakeY = y;
 }
 
-PS.levelLoader = function() {
-	PS.makePlayer(playerX, playerY);
-	PS.makeWall(5,5);
-	PS.makeWall(5,6);
-
-	PS.makeSnake(7,7);
+PS.chestGet = function(){
+var item = PS.random(3);
+if (item==1){
+	player.setDmg(player.getDmg()+1);
+}
+else if (item==2){
+	player.setMaxHp(player.getMaxHp()+2);
+	player.setCurrHp(player.getCurrHp()+2);
+}
+else if (item==3){
+	if (player.getCurrHp()+5 > player.getCurrHp()){
+		player.setCurrHp(player.getMaxHp());
+	}
+	else{
+		player.setCurrHp(player.getCurrHp()+5);
+	}
+}
+PS.makeFloor(chestX,chestY);
 }
 
-PS.uiLoader = function() {
-	for (var i = 10; i < 13; i++){
-		for (var j = 0; j < 10; j++) {
-			PS.makeWall(j, i);
+PS.makeStair = function(x, y){
+	PS.color(x,y,0x6600ff);
+	PS.data(x,y,stairData);
+	stairX = x;
+	stairY = y;
+}
+
+var levelMemory1 = 0;
+var levelMemory2 = 0;
+var levelMemory3 = 0;
+PS.levelLoader = function() {
+	// reset level
+	for (var i=0; i<10;i++){
+		for (var j=0;j<10;j++){
+			PS.makeFloor(i,j);
 		}
 	}
+	PS.statusText("Score: " + floorsCleared);
+	var validLevel = true;
+	var level = PS.random(5);
+	if (level !== levelMemory1 && level !== levelMemory2 && level !== levelMemory3) {
+		validLevel = true;
+	}
+	snakeCurrHp = snakeMaxHp;
+	snakeAlive = true;
+	chestClosed = true;
+	// level v1
+	if (validLevel && level === 1) {
+		PS.makePlayer(1, 1);
+		PS.makeChest(6, 2);
+		PS.makeSnake(3, 5);
+		PS.makeStair(9,9);
+		for (var y = 1; y < 8; y += 2) {
+			for (var x = 4; x < 8; x++) {
+				PS.makeWall(x, y);
+			}
+		}
+		for (var y = 2; y < 7; y += 2) {
+			for (var x = 2; x < 6; x++) {
+				PS.makeWall(x, y);
+			}
+		}
+	}
+	// level v2
+	if (validLevel && level === 2) {
+		PS.makePlayer(0,0);
+		PS.makeChest(6,2);
+		PS.makeSnake(5,6);
+		PS.makeStair(9,9);
+		for (var i = 1; i < 10; i++){
+			PS.makeWall(0,i);
+		}
+		for (var j = 0; j < 9; j++){
+			PS.makeWall(9,j);
+		}
+		for (var k = 1; k <8; k++){
+			PS.makeWall(2,k);
+		}
+		for (var l = 1; l < 7;l++){
+			PS.makeWall(l,9);
+		}
+		for (var m = 3; m <8; m++) {
+			PS.makeWall(m, 1);
+		}
+		for (var n = 4; n < 8; n++) {
+			PS.makeWall(n, 3);
+		}
+		PS.makeWall(7,2);
+		PS.makeWall(4,4);
+		PS.makeWall(4,5);
+		PS.makeWall(5,5);
+		PS.makeWall(6,5);
+		PS.makeWall(8,5);
+		PS.makeWall(9,5);
+		PS.makeWall(6,6);
+		PS.makeWall(8,6);
+		PS.makeWall(9,6);
+		PS.makeWall(5,7);
+		PS.makeWall(6,7);
+		PS.makeWall(9,7);
+		PS.makeWall(4,8);
+		PS.makeWall(5,8);
+		PS.makeWall(8,8);
+		PS.makeWall(9,8);
+	}
+	// level v3
+	if (validLevel && level === 3) {
+	PS.makePlayer(0,9);
+	PS.makeChest(6,0);
+	PS.makeSnake(9,0);
+	PS.makeStair(5,5);
+	for (var i = 0; i<9;i++){
+		PS.makeWall(1,i);
+	}
+	for (var j = 2; j < 9; j++){
+		PS.makeWall(j,8);
+	}
+	for (var k = 2; k < 9; k++){
+		PS.makeWall(8,k);
+	}
+	for (var l = 3; l < 8; l++){
+		PS.makeWall(l,2);
+	}
+	for (var n = 3; n < 7; n++){
+		PS.makeWall(3, n);
+	}
+	PS.makeWall(4,0);
+	PS.makeWall(5,0);
+	PS.makeWall(7,0);
+	PS.makeWall(5,4);
+	PS.makeWall(6,4);
+	PS.makeWall(6,5);
+	PS.makeWall(4,6);
+	PS.makeWall(5,6);
+	PS.makeWall(6,6);
+	}
+	// level v4
+	if (validLevel && level === 4) {
+	PS.makePlayer(9,9);
+	PS.makeChest(9,1);
+	PS.makeStair(8,3);
+	PS.makeSnake(0,0);
+	PS.makeWall(4,0);
+	PS.makeWall(5,0);
+	PS.makeWall(1,1);
+	PS.makeWall(2,1);
+	PS.makeWall(5,1);
+	PS.makeWall(7,1);
+	PS.makeWall(8,1);
+	PS.makeWall(1,2);
+	PS.makeWall(2,2);
+	PS.makeWall(3,2);
+	PS.makeWall(7,2);
+	PS.makeWall(8,2);
+	PS.makeWall(9,2);
+	for(var i = 3; i < 8; i++){
+		PS.makeWall(i,3);
+	}
+	PS.makeWall(9,3);
+	PS.makeWall(1,4);
+	PS.makeWall(4,4);
+	PS.makeWall(5,4);
+	PS.makeWall(6,4);
+	PS.makeWall(9,4);
+	PS.makeWall(1,5);
+	PS.makeWall(2,5);
+	PS.makeWall(8,5);
+	PS.makeWall(9,5);
+	PS.makeWall(2, 6);
+	PS.makeWall(3,6);
+	PS.makeWall(7,6);
+	PS.makeWall(8,6);
+	for (var j = 3; j < 8; j++){
+		PS.makeWall(j,7);
+	}
+	PS.makeWall(4,8);
+	PS.makeWall(5,8);
+	PS.makeWall(6,8);
+	}
+	// level v5
+	if (validLevel && level === 5) {
+	PS.makePlayer(5,9);
+	PS.makeChest(6,6);
+	PS.makeSnake(3,5);
+	PS.makeStair(9,5);
+	PS.makeWall(7,0);
+	for (var i = 1; i < 8; i++){
+		PS.makeWall(i,1);
+	}
+	PS.makeWall(4,2);
+	PS.makeWall(1,3);
+	for(var j = 3; j < 8; j++){
+		PS.makeWall(2,j);
+	}
+	for(var k = 3; k<10; k++){
+		PS.makeWall(k,7);
+	}
+	PS.makeWall(5,4);
+	PS.makeWall(5,5);
+	PS.makeWall(5,6);
+	PS.makeWall(7,5);
+	PS.makeWall(7,6);
+	PS.makeWall(8,3);
+	PS.makeWall(8,4);
+	PS.makeWall(8,5);
+	}
+	if (!validLevel){
+		levelLoader();
+	}
+	else {
+		levelMemory1 = level;
+		levelMemory2 = levelMemory1;
+		//levelMemory3 = levelMemory2;
+	}
+}
+var firstLoad = true;
+PS.uiLoader = function() {
+	if (firstLoad) {
+		for (var i = 10; i < 13; i++) {
+			for (var j = 0; j < 10; j++) {
+				PS.makeWall(j, i);
+			}
+		}
+		firstLoad = false;
+	}
 	// setup health
-	PS.glyph(1,11,0x2665);
-	PS.glyph(2,11,0x0030);
-	PS.glyph(3,11,0x003);
+	var currTens = player.getCurrHp()/10;
+	var currOnes = player.getCurrHp()%10;
+	PS.glyph(2,11,0x2665);
+	PS.glyph(3,11,(0x0030+currTens));
+	PS.glyph(4,11,0x0030+currOnes);
+	PS.glyph(5,11,0x002F);
+	var maxTens = player.getMaxHp()/10;
+	var maxOnes = player.getMaxHp()%10;
+	PS.glyph(6,11,(0x0030+maxTens));
+	PS.glyph(7,11,(0x0030+maxOnes));
+	//setup dmg
+	var dmgTens = player.getDmg()/10;
+	var dmgOnes = player.getDmg()%10;
+	PS.glyph(2,12,0x2694);
+	PS.glyph(3,12,(0x0030+dmgTens));
+	PS.glyph(4,12,(0x0030+dmgOnes));
+
 }
 
 PS.gameOver = function() {
-	if (!playerAlive){
+	if (!player.getAlive()){
 		for (var i=0; i<10;i++){
-			for (var j=10;j<10;j++){
+			for (var j=0;j<10;j++){
 				PS.makeFloor(i,j);
 			}
 		}
@@ -167,56 +466,63 @@ PS.gameOver = function() {
 
 PS.moveEnemy =function(x,y){
 	if (snakeAlive){
-		if (y !== playerY) {
-			if (y > playerY && y > 0 && PS.data(x, y - 1) !== 1) {
-				if (playerY === y-1 && playerX === x){
-					playerCurrHp -= snakeDMG;
-					if (playerCurrHp < 0){
-						playerAlive = false;
+		var moved = false;
+		if (y !== player.getY()) {
+			if (y > player.getY() && y > 0 && PS.data(x, y - 1) !== 1 && !moved && PS.data(x,y - 1) !== chestData) {
+				if (player.getY() === y-1 && player.getX() === x){
+					player.setCurrHp(player.getCurrHp() - snakeDMG);
+					if (player.getCurrHp() < 0){
+						player.setAlive(false);
 						PS.gameOver();
 					}
 					return;
 				}
 				PS.makeFloor(x, y);
 				PS.makeSnake(x, y - 1);
-			} else if (y < playerY && y < 9 && PS.data(x, y + 1) !== 1) {
-				if (playerY === y+1 && playerX === x){
-					playerCurrHp -= snakeDMG;
-					PS.debug(playerCurrHp);
-					if (playerCurrHp < 0){
-						playerAlive = false;
+				moved = true;
+			}
+			if (y < player.getY() && y < 9 && PS.data(x, y + 1) !== 1 && !moved && PS.data(x,y + 1) !== chestData) {
+				if (player.getY() === y+1 && player.getX() === x){
+					player.setCurrHp(player.getCurrHp() - snakeDMG);
+					if (player.getCurrHp() < 0){
+						player.setAlive(false);
 						PS.gameOver();
 					}
 					return;
 				}
 				PS.makeFloor(x, y);
 				PS.makeSnake(x, y + 1);
+				moved = true;
 			}
-		} else if (x !== playerX) {
-			if (x > playerX && x > 0 && PS.data(x - 1, y) !== 1) {
-				if (playerX === x-1 && playerY === y){
-					playerCurrHp -= snakeDMG;
-					PS.debug(playerCurrHp);
-					if (playerCurrHp < 0){
-						playerAlive = false;
+		}
+		if (x !== player.getX()) {
+			if (x > player.getX() && x > 0 && PS.data(x - 1, y) !== 1 && !moved && PS.data(x - 1,y) !== chestData) {
+				if (player.getX() === x-1 && player.getY() === y){
+					player.setCurrHp(player.getCurrHp() - snakeDMG);
+
+					if (player.getCurrHp() < 0){
+						player.setAlive(false);
 						PS.gameOver();
 					}
 					return;
 				}
 				PS.makeFloor(x, y);
 				PS.makeSnake(x - 1, y);
-			} else if (x < playerX && x < 9 && PS.data(x + 1, y) !== 1) {
-				if (playerX === x+1 && playerY === y){
-					playerCurrHp -= snakeDMG;
-					PS.debug(playerCurrHp);
-					if (playerCurrHp < 0){
-						playerAlive = false;
+				moved = true;
+			}
+			if (x < player.getX() && x < 9 && PS.data(x + 1, y) !== 1 && !moved && PS.data(x+1,y) !== chestData) {
+				if (player.getX() === x+1 && player.getY() === y){
+					player.setCurrHp(player.getCurrHp() - snakeDMG);
+
+					if (player.getCurrHp() < 0){
+						player.setAlive(false);
 						PS.gameOver();
 					}
 					return;
 				}
 				PS.makeFloor(x, y);
 				PS.makeSnake(x + 1, y);
+				moved = true;
 			}
 		}
 	}
@@ -324,73 +630,104 @@ This function doesn't have to do anything. Any value returned is ignored.
 PS.keyDown = function( key, shift, ctrl, options ) {
 	// Uncomment the following code line to inspect first three parameters:
 	if (key == PS.KEY_ARROW_UP || key == 119){
-		if (playerY > 0 && PS.data(playerX,playerY-1) !== 1){
-			if (playerY-1 === snakeY && playerX === snakeX && snakeAlive){
-				snakeCurrHp -= playerDMG;
+		if (player.getY() > 0 && PS.data(player.getX(),player.getY()-1) !== 1){
+			if (player.getY()-1 === snakeY && player.getX() === snakeX && snakeAlive){
+				snakeCurrHp -= player.getDmg();
 				PS.debug(snakeCurrHp);
-				if (snakeCurrHp < 0){
+				if (snakeCurrHp <= 0){
 					snakeAlive = false;
 					PS.makeFloor(snakeX, snakeY);
 				}
 			}
+			else if (player.getY()-1 === chestY && player.getX() === chestX && chestClosed){
+				PS.chestGet();
+				chestClosed = false;
+			}
+			else if (player.getY()-1 === stairY && player.getX() === stairX){
+				floorsCleared++;
+				PS.levelLoader();
+			}
 			else {
-				PS.makeFloor(playerX, playerY);
-				PS.makePlayer(playerX, playerY - 1);
+				PS.makeFloor(player.getX(), player.getY());
+				PS.makePlayer(player.getX(), player.getY() - 1);
 			}
 		}
 		PS.moveEnemy(snakeX, snakeY);
 	}
 
 	else if (key == PS.KEY_ARROW_DOWN || key == 115){
-		if (playerY < 9 && PS.data(playerX,playerY+1) !==1){
-			if (playerY+1 === snakeY && playerX === snakeX && snakeAlive) {
-				snakeCurrHp -= playerDMG;
+		if (player.getY() < 9 && PS.data(player.getX(),player.getY()+1) !==1){
+			if (player.getY()+1 === snakeY && player.getX() === snakeX && snakeAlive) {
+				snakeCurrHp -= player.getDmg();
 				PS.debug(snakeCurrHp);
-				if (snakeCurrHp < 0) {
+				if (snakeCurrHp <= 0) {
 					snakeAlive = false;
 					PS.makeFloor(snakeX, snakeY);
 				}
 			}
+			else if (player.getY()+1 === chestY && player.getX() === chestX && chestClosed){
+				PS.chestGet();
+				chestClosed = false;
+			}
+			else if (player.getY()+1 === stairY && player.getX() === stairX){
+				floorsCleared++;
+				PS.levelLoader();
+			}
 			else {
-				PS.makeFloor(playerX, playerY);
-				PS.makePlayer(playerX, playerY + 1);
+				PS.makeFloor(player.getX(), player.getY());
+				PS.makePlayer(player.getX(), player.getY() + 1);
 			}
 		}
 		PS.moveEnemy(snakeX, snakeY);
 	}
 
 	else if (key == PS.KEY_ARROW_RIGHT || key == 100){
-		if (playerX < 9 && PS.data(playerX+1,playerY) !== 1){
-			if (playerX+1 === snakeX && playerY === snakeY && snakeAlive){
-				snakeCurrHp -= playerDMG;
+		if (player.getX() < 9 && PS.data(player.getX()+1,player.getY()) !== 1){
+			if (player.getX()+1 === snakeX && player.getY() === snakeY && snakeAlive){
+				snakeCurrHp -= player.getDmg();
 				PS.debug(snakeCurrHp);
-				if (snakeCurrHp < 0){
+				if (snakeCurrHp <= 0){
 					snakeAlive = false;
 					PS.makeFloor(snakeX, snakeY);
 				}
 			}
-
+			else if (player.getY() === chestY && player.getX()+1 === chestX && chestClosed){
+				PS.chestGet();
+				chestClosed = false;
+			}
+			else if (player.getY() === stairY && player.getX()+1 === stairX){
+				floorsCleared++;
+				PS.levelLoader();
+			}
 			else {
-				PS.makeFloor(playerX, playerY);
-				PS.makePlayer(playerX + 1, playerY);
+				PS.makeFloor(player.getX(), player.getY());
+				PS.makePlayer(player.getX() + 1, player.getY());
 			}
 		}
 		PS.moveEnemy(snakeX, snakeY);
 	}
 
 	else if (key == PS.KEY_ARROW_LEFT || key == 97){
-		if (playerX > 0 && PS.data(playerX-1,playerY) !== 1){
-			if (playerX-1 === snakeX && playerY === snakeY && snakeAlive){
-				snakeCurrHp -= playerDMG;
+		if (player.getX() > 0 && PS.data(player.getX()-1,player.getY()) !== 1){
+			if (player.getX()-1 === snakeX && player.getY() === snakeY && snakeAlive){
+				snakeCurrHp -= player.getDmg();
 				PS.debug(snakeCurrHp);
-				if (snakeCurrHp < 0){
+				if (snakeCurrHp <= 0){
 					snakeAlive = false;
 					PS.makeFloor(snakeX, snakeY);
 				}
 			}
+			else if (player.getY() === chestY && player.getX()-1 === chestX && chestClosed){
+				PS.chestGet();
+				chestClosed = false;
+			}
+			else if (player.getY() === stairY && player.getX()-1 === stairX){
+				floorsCleared++;
+				PS.levelLoader();
+			}
 			else {
-				PS.makeFloor(playerX, playerY);
-				PS.makePlayer(playerX - 1, playerY);
+				PS.makeFloor(player.getX(), player.getY());
+				PS.makePlayer(player.getX() - 1, player.getY());
 			}
 		}
 		PS.moveEnemy(snakeX, snakeY);
