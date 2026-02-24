@@ -172,8 +172,7 @@ PS.init = function( system, options ) {
 
 function playerSpriteLoader(image) {
 	// an image object representing kitten.bmp
-	playerSprite = PS.spriteImage(image);
-	PS.debug(playerSprite);
+	PS.spriteImage(image);
 };
 
 PS.makeWall = function(x,y){
@@ -196,7 +195,7 @@ PS.makeChest = function(x,y){
 PS.makePlayer = function(x,y){
 	PS.color(x,y,playerColor);
 	PS.data(x,y,playerData);
-	//PS.spriteMove(playerSprite,x,y);
+	PS.spriteMove(sprite_0,x,y);
 	player.setX(x);
 	player.setY(y);
 }
@@ -775,4 +774,5 @@ PS.input = function( sensors, options ) {
 
 	// Add code here for when an input event is detected.
 };
+
 
