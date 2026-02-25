@@ -827,7 +827,8 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 		PS.levelLoader();
 		levelMemory2 = 0;
 		levelMemory1 = 0;
-		PS.spriteShow(gameOverSprite, false);
+		PS.spriteDelete(gameOverSprite);
+		PS.imageLoad("Images/gameOver.png", gameOverSpriteLoader);
 	}
 	// PS.debug( "PS.keyDown(): key=" + key + ", shift=" + shift + ", ctrl=" + ctrl + "\n" );
 
