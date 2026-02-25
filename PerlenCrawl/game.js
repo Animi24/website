@@ -524,6 +524,7 @@ PS.gameOver = function() {
 		// 		PS.makeFloor(i,j);
 		// 	}
 		// }
+		PS.makeFloor(player.getX(), player.getY());
 		PS.audioPlay("fx_wilhelm");
 		PS.statusText("GameOver");
 	}
@@ -866,5 +867,6 @@ PS.input = function( sensors, options ) {
 
 	// Add code here for when an input event is detected.
 };
+
 
 
