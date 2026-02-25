@@ -700,6 +700,7 @@ This function doesn't have to do anything. Any value returned is ignored.
 
 PS.keyDown = function( key, shift, ctrl, options ) {
 	// Uncomment the following code line to inspect first three parameters:
+	if (playerAlive){
 	if (key == PS.KEY_ARROW_UP || key == 119){
 		if (player.getY() > 0 && PS.data(player.getX(),player.getY()-1) !== 1){
 			if (player.getY()-1 === snakeY && player.getX() === snakeX && snakeAlive){
@@ -811,7 +812,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 		}
 		PS.moveEnemy(snakeX, snakeY);
 	}
-
+	}
 	else if (key == 114){
 		player.setAlive(true);
 		player.setMaxHp(5);
@@ -865,4 +866,5 @@ PS.input = function( sensors, options ) {
 
 	// Add code here for when an input event is detected.
 };
+
 
