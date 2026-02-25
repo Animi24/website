@@ -136,7 +136,6 @@ var chestClosed = true;
 var floorsCleared = 0;
 var chestSprite= "unloaded";
 var stairSprite= "unloaded";
-var gameOverSprite = "unloaded";
 
 
 PS.init = function( system, options ) {
@@ -166,7 +165,6 @@ PS.init = function( system, options ) {
 	// PS.imageLoad("Images/snake.png",snakeSpriteLoader);
 	// PS.imageLoad("Images/chest.png",chestSpriteLoader);
 	// PS.imageLoad("Images/stair.png",stairSpriteLoader);
-	PS.imageLoad("Images/gameOver.png", gameOverSpriteLoader);
 	PS.levelLoader();
 	PS.uiLoader();
 
@@ -206,10 +204,6 @@ function stairSpriteLoader(image) {
 	stairSprite = PS.spriteImage(image)
 	PS.spriteMove(stairSprite, 0,0);
 	PS.spriteShow(stairSprite);
-};
-function gameOverSpriteLoader(image) {
-	// an image object representing kitten.bmp
-	gameOverSprite = PS.spriteImage(image)
 };
 
 PS.makeWall = function(x,y){
@@ -319,6 +313,8 @@ PS.levelLoader = function() {
 	if (level !== levelMemory1 && level !== levelMemory2) {
 		validLevel = true;
 	}
+	snakeMaxHp = 4 + (floorsCleared/2);
+	snakeDMG = 2 + (floorsCleared/3);
 	snakeCurrHp = snakeMaxHp;
 	snakeAlive = true;
 	chestClosed = true;
@@ -523,13 +519,11 @@ PS.uiLoader = function() {
 
 PS.gameOver = function() {
 	if (!player.getAlive()){
-		for (var i=0; i<10;i++){
-			for (var j=0;j<10;j++){
-				PS.makeFloor(i,j);
-			}
-		}
-		PS.spriteMove(gameOverSprite, 0,0);
-		PS.spriteShow(gameOverSprite);
+		// for (var i=0; i<10;i++){
+		// 	for (var j=0;j<10;j++){
+		// 		PS.makeFloor(i,j);
+		// 	}
+		// }
 		PS.audioPlay("fx_wilhelm");
 		PS.statusText("GameOver");
 	}
@@ -827,8 +821,6 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 		PS.levelLoader();
 		levelMemory2 = 0;
 		levelMemory1 = 0;
-		PS.spriteDelete(gameOverSprite);
-		PS.imageLoad("Images/gameOver.png", gameOverSpriteLoader);
 	}
 	// PS.debug( "PS.keyDown(): key=" + key + ", shift=" + shift + ", ctrl=" + ctrl + "\n" );
 
