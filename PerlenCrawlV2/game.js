@@ -368,11 +368,11 @@ PS.levelLoader = function() {
 	if (level !== levelMemory1 && level !== levelMemory2) {
 		validLevel = true;
 	}
-	if(floorsCleared === 5 && snakes.length === 1){
+	if(floorsCleared === 5 || floorsCleared === 15 || floorsCleared || 25){
 		snakes.push(new Enemy(4,4,2,0,0,true));
 	}
 	PS.updateEnemies();
-	chestClosed = true;
+	chestClosed = true;s
 	// level v1
 	if (validLevel && level === 1) {
 		PS.makePlayer(1, 1);
