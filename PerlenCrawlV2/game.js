@@ -372,7 +372,7 @@ PS.levelLoader = function() {
 		snakes.push(new Enemy(4,4,2,0,0,true));
 	}
 	PS.updateEnemies();
-	chestClosed = true;s
+	chestClosed = true;
 	// level v1
 	if (validLevel && level === 1) {
 		PS.makePlayer(1, 1);
