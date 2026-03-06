@@ -354,7 +354,6 @@ PS.spawnSnakes = function(){
 
 var levelMemory1 = 0;
 var levelMemory2 = 0;
-var levelMemory3 = 0;
 PS.levelLoader = function() {
 	// reset level
 	for (var i=0; i<10;i++){
