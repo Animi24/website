@@ -319,11 +319,8 @@ PS.audioPlay("fx_bloop");
 }
 
 PS.makeStair = function(x, y){
-	//PS.color(x,y,0x6600ff);
 	PS.data(x,y,stairData);
 	PS.glyph(x,y, 0x1fa9c);
-	// PS.spriteMove(stairSprite,x,y);
-	// PS.spriteShow(stairSprite);
 	stairX = x;
 	stairY = y;
 }
