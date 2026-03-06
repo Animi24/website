@@ -367,7 +367,7 @@ PS.levelLoader = function() {
 	if (level !== levelMemory1 && level !== levelMemory2) {
 		validLevel = true;
 	}
-	if(floorsCleared === 5 || floorsCleared === 15 || floorsCleared || 25){
+	if(floorsCleared === 5 || floorsCleared === 15 || floorsCleared === 25){
 		snakes.push(new Enemy(4,4,2,0,0,true));
 	}
 	PS.updateEnemies();
